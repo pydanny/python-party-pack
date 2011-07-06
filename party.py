@@ -15,7 +15,7 @@ class Party(object):
     def __init__(self, attendees=None, **kwargs):
                 
         if attendees is None:
-            self.attendees = 1  # The default is just you
+            self.attendees = random.randrange(1,100)
         else:
             self.attendees = attendees
             
@@ -25,24 +25,29 @@ class Party(object):
             quantity = kwargs.pop(drink, random.randrange(1, 101))
             setattr(self, drink, quantity)
             
+        print("Let's get this party started!")
+            
     def inventory(self):
+        
+        print("What do we got at this party?")
         print("Attendees: {0}".format(self.attendees))
         print("Attendees w/hats: {0}".format(self.party_hatted_attendees))
         print("Beers: {0}".format(self.beers))
         print("Sangrias: {0}".format(self.sangrias))
         print("Wines: {0}".format(self.wines))
-        print("Lemonades: {0}".format(self.lemonades))                                        
+        print("Lemonades: {0}".format(self.lemonades))
+        print("="*40)
         
-    def drink(self, substance):
+    def drink(self, substance_name):
         """ Drink an available substances specified in VALID_DRINKS constant"""
         
-        if substance.endswith('s'):
-            substance = substance[:-1]
+        if substance_name.endswith('s'):
+            substance_name = substance[:-1]
             
-        if substance not in VALID_DRINKS:
+        if substance_name not in VALID_DRINKS:
             raise WeDontHaveThatDrink('Valid substances to drink are {0}'.format(VALID_DRINKS))
             
-        substance += 's'
+        substance = substance_name + 's'
             
         quantity = getattr(self, substance)
         if quantity == 0:
@@ -50,7 +55,7 @@ class Party(object):
             
         quantity -= 1
         setattr(self, substance, quantity)
-        msg = "Another {0} drunk. We have {1} left!".format(substance, quantity)
+        msg = "Another {0} drunk. We have {1} left!".format(substance_name, quantity)
         print(msg)
             
     def put_hat_on_attendee(self):
@@ -62,10 +67,21 @@ class Party(object):
         print(msg)        
             
 if __name__ == '__main__':
-    p = Party(5)
+    p = Party(  )
     p.inventory()
     while True:
-        p.drink('wine')
+        try:
+            p.put_hat_on_attendee()        
+        except EveryoneHasPartyHat:
+            print("Party called on account of everyone having a hat!")
+            break
+        try:
+            substance = VALID_DRINKS[random.randrange(0, len(VALID_DRINKS))]
+            p.drink(substance)
+        except WeAreOutOfThatDrink:
+            print("Party called on account of running out of a drink.")            
+            break
+    p.inventory()
         
-    p.put_hat_on_attendee()
+        
     
